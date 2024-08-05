@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -12,7 +11,6 @@ async function bootstrap() {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   });
-  app.use(cookieParser());
 
   // class-validator, class-transformer와 연계해서 controller에서 request body 같은거 dto 타입지정 해 놓으면 자동으로 검증해주고 인스턴스 변환도 해줍니다!
   app.useGlobalPipes(
