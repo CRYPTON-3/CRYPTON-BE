@@ -1,0 +1,10 @@
+// prisma extension 기능으로 에러같은거 잡아주고, settings.json에 설정해둔 걸로 cmd + s 저장했을 때 자동포맷팅됩니다.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
