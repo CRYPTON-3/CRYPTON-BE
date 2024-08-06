@@ -8,3 +8,100 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           Int      @id @default(autoincrement())
+  provider     String
+  email        String   @unique
+  nickName     String
+  createdAt    DateTime @default(now())
+  refreshToken String?
+
+  groups              GroupUser[]
+  Group               Group[]
+  GroupUserInvitation GroupUserInvitation[]
+  FileOpenHistory     FileOpenHistory[]
+  FileStealHistory    FileStealHistory[]
+}
+
+model Group {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique @default(uuid())
+  name      String
+  comment   String?
+  createdAt DateTime @default(now())
+
+  owner Int
+
+  ownerUser           User                  @relation(fields: [owner], references: [id])
+  GroupUser           GroupUser[]
+  GroupUserInvitation GroupUserInvitation[]
+  GroupFile           GroupFile[]
+}
+
+model GroupUser {
+  groupId   Int
+  userId    Int
+  name      String
+  createdAt DateTime @default(now())
+
+  User  User  @relation(fields: [userId], references: [id])
+  Group Group @relation(fields: [groupId], references: [id])
+
+  @@id([groupId, userId])
+}
+
+model GroupUserInvitation {
+  id        Int      @default(autoincrement())
+  groupId   Int
+  userId    Int
+  name      String
+  createdAt DateTime @default(now())
+  isAccept  Boolean?
+
+  User  User  @relation(fields: [userId], references: [id])
+  Group Group @relation(fields: [groupId], references: [id])
+
+  @@id([groupId, userId])
+}
+
+model File {
+  id               String             @id @default(uuid())
+  hash             String
+  key              String
+  createdAt        DateTime           @default(now())
+  FileOpenHistory  FileOpenHistory[]
+  FileStealHistory FileStealHistory[]
+  GroupFile        GroupFile[]
+}
+
+model FileOpenHistory {
+  id        Int      @id @default(autoincrement())
+  fileId    String
+  userId    Int
+  createdAt DateTime @default(now())
+
+  File File @relation(fields: [fileId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+}
+
+model FileStealHistory {
+  id        Int      @id @default(autoincrement())
+  fileId    String
+  userId    Int
+  createdAt DateTime @default(now())
+
+  File File @relation(fields: [fileId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+}
+
+model GroupFile {
+  groupId   Int
+  fileId    String
+  createdAt DateTime @default(now())
+
+  Group Group @relation(fields: [groupId], references: [id])
+  File  File  @relation(fields: [fileId], references: [id])
+
+  @@id([groupId, fileId])
+}
