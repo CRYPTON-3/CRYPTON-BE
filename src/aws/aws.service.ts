@@ -12,7 +12,7 @@ export class AwsService {
   async uploadCryptonFile(file: string, fileId: string) {
     const command = new PutObjectCommand({
       Bucket: this.configService.get<string>('AWS_BUCKET_NAME'),
-      Key: 'files/' + fileId + '.crypton',
+      Key: 'files/' + fileId,
       Body: file,
       ContentType: 'application/x-custom-crypton',
     });

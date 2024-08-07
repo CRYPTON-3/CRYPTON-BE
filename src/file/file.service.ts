@@ -26,7 +26,7 @@ export class FileService {
 
       await this.awsService.uploadCryptonFile(cryptoFile, fileId);
       await this.fileRepository.createFile({
-        fileName: file.originalname,
+        fileName: file.originalname + '.crypton',
         hash,
         key,
         userId,
