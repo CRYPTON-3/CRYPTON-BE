@@ -18,10 +18,15 @@ import {
   ApiCookieAuth,
   ApiOperation,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { InvitationUser } from 'src/group/dto/request/invitation.dto';
 import { GetInvitationDto } from './dto/request/getInvitation.dto';
+import { createGroupUserInvitationDto } from './dto/response/createGroupUser.dto';
+import { TrueAcceptUserDto } from './dto/response/trueAcceptUser.dto';
+import { GetGroupUsersResponseDto } from './dto/response/GetGroupUsers.dto';
 
+@ApiTags('GroupUsers')
 @Controller('groupUsers')
 export class GroupUsersController {
   constructor(private readonly groupUsersService: GroupUsersService) {}
@@ -41,7 +46,7 @@ export class GroupUsersController {
   @ApiCookieAuth('accessToken')
   @ApiBody({ type: CreateInvitationDto })
   @Post('create')
-  @ApiResponse({ status: 201 })
+  @ApiResponse({ status: 201, type: createGroupUserInvitationDto })
   @HttpCode(HttpStatus.CREATED)
   async createUserInvitation(
     @Body() createInvitationDto: CreateInvitationDto,
@@ -49,15 +54,10 @@ export class GroupUsersController {
   ) {
     const { userId } = req.user;
 
-    const invitationGroup = await this.groupUsersService.createUserInvitation(
+    return await this.groupUsersService.createUserInvitation(
       createInvitationDto,
       userId,
     );
-
-    return {
-      message: '가입 요청에 성공하였습니다.',
-      data: invitationGroup,
-    };
   }
 
   /**
@@ -82,18 +82,12 @@ export class GroupUsersController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: '그룹원 승인' })
   @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 201 })
+  @ApiResponse({ status: 201, type: TrueAcceptUserDto })
   @ApiBody({ type: InvitationUser })
   @Patch('accept')
   @HttpCode(HttpStatus.CREATED)
   async invitationUser(@Body() invitationUser: InvitationUser) {
-    const isAcceptUser =
-      await this.groupUsersService.invitationUser(invitationUser);
-
-    return {
-      message: '유저 가입 승인이 완료 되었습니다.',
-      data: isAcceptUser,
-    };
+    return await this.groupUsersService.invitationUser(invitationUser);
   }
   /**
    * userFlow => 오너가 신청 보낸 유저 확인 => 조회
@@ -103,22 +97,18 @@ export class GroupUsersController {
    * Service(findByUser, getInvitationUsers)
    * Repository(getInvitationUsers)
    * RequsetDto(GetInvitationDto)
-   * ResponseDto()
+   * ResponseDto(GetGroupUsersResponseDto)
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, type: GetGroupUsersResponseDto })
   @ApiOperation({ summary: '가입 신청 조회' })
   @ApiCookieAuth('accessToken')
   @ApiBody({ type: InvitationUser })
   @Get('invitationUsers')
   @HttpCode(HttpStatus.OK)
   async getInvitationUsers(@Body() getInvitationDto: GetInvitationDto) {
-    const getInvitation = await this.groupUsersService.getInvitationUsers(
+    return await this.groupUsersService.getInvitationUsers(
       getInvitationDto.groupId,
     );
-
-    return {
-      data: getInvitation,
-    };
   }
 }

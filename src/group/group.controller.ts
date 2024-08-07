@@ -27,6 +27,9 @@ import { UpdateGroupDto } from './dto/request/updateGroup.dto';
 import { GetGroupDto } from './dto/request/getGroup';
 import { GetCodeDto } from './dto/request/getCode.dto';
 import { GetSearchDto } from './dto/request/getSearch.dto';
+import { CreateGroupResponseDto } from './dto/response/createGroup.dto';
+import { GetGroupsDto } from './dto/response/getGroups.dto';
+import { UpadteGroupResponseDto } from './dto/response/updateGroupResponse.dto';
 
 @ApiTags('Group')
 @Controller('group')
@@ -41,13 +44,13 @@ export class GroupController {
    * Service(createGroup)
    * Repository(createGroup)
    * RequsetDto(CreateGroupDto)
-   * ResponseDto(CreateGroupDto)
+   * ResponseDto(CreateGroupResponseDto)
    */
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: '그룹 생성' })
   @ApiCookieAuth('accessToken')
   @ApiBody({ type: CreateGroupDto })
-  @ApiResponse({ status: 201, type: CreateGroupDto })
+  @ApiResponse({ status: 201, type: CreateGroupResponseDto })
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async createGroup(
@@ -56,15 +59,7 @@ export class GroupController {
   ) {
     const { userId } = req.user;
 
-    const createGroup = await this.groupService.createGroup(
-      createGroupDto,
-      userId,
-    );
-
-    return {
-      message: '그룹 생성에 성공하였습니다.',
-      data: createGroup,
-    };
+    return await this.groupService.createGroup(createGroupDto, userId);
   }
 
   /**
@@ -81,23 +76,15 @@ export class GroupController {
   @ApiOperation({ summary: '그룹 업데이트' })
   @ApiCookieAuth('accessToken')
   @ApiBody({ type: UpdateGroupDto })
-  @ApiResponse({ status: 201, type: UpdateGroupDto })
-  @Patch('update/:groupId')
+  @ApiResponse({ status: 201, type: UpadteGroupResponseDto })
+  @Patch('update')
   @HttpCode(HttpStatus.CREATED)
   async updateGroup(
     @Body() updateGroupDto: UpdateGroupDto,
     @Req() req: JwtRequest,
   ) {
     const { userId } = req.user;
-    const updateGroup = await this.groupService.updateGroup(
-      updateGroupDto,
-      userId,
-    );
-
-    return {
-      message: '그룹 업데이트에 성공하였습니다.',
-      data: updateGroup,
-    };
+    return await this.groupService.updateGroup(updateGroupDto, userId);
   }
 
   /**
@@ -108,27 +95,19 @@ export class GroupController {
    * Service(updateCode,getGroup,checkOwner)
    * Repository(updateCode)
    * RequsetDto(GetGroupDto)
-   * ResponseDto()
+   * ResponseDto(UpdateGroupDto)
    */
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: '그룹 코드 변경' })
   @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 201 })
+  @ApiResponse({ status: 201, type: UpadteGroupResponseDto })
   @ApiParam({ name: 'groupId', type: Number, description: '그룹 ID' })
-  @Patch('update/:groupId')
+  @Patch('update/code')
   @HttpCode(HttpStatus.CREATED)
   async updateCode(@Body() GetGroupDto: GetGroupDto, @Req() req: JwtRequest) {
     const { userId } = req.user;
 
-    const updateGroup = await this.groupService.updateCode(
-      GetGroupDto.groupId,
-      userId,
-    );
-
-    return {
-      message: '그룹 업데이트에 성공하였습니다.',
-      data: updateGroup,
-    };
+    return await this.groupService.updateCode(GetGroupDto.groupId, userId);
   }
 
   /**
@@ -138,21 +117,17 @@ export class GroupController {
    * Service(searchGroups)
    * Repository(searchGroups)
    * RequsetDto(GetGroupDto)
-   * ResponseDto()
+   * ResponseDto(GetGroupsDto)
    */
   @ApiOperation({ summary: '그룹 이름 검색' })
   @UseGuards(AuthGuard('jwt'))
   @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 200, type: GetSearchDto })
+  @ApiResponse({ status: 200, type: GetGroupsDto })
   @ApiBody({ type: GetSearchDto })
-  @Get('')
+  @Get('search')
   @HttpCode(HttpStatus.OK)
   async getGroup(@Body() getSearchDto: GetSearchDto) {
-    const getGroup = await this.groupService.searchGroups(getSearchDto);
-
-    return {
-      data: getGroup,
-    };
+    return await this.groupService.searchGroups(getSearchDto);
   }
 
   /**
@@ -162,21 +137,17 @@ export class GroupController {
    * Service(getCodeGroup)
    * Repository(getCodeGroup)
    * RequsetDto(GetCodeDto)
-   * ResponseDto(GetCodeDto)
+   * ResponseDto(GetGroupsDto)
    */
   @ApiOperation({ summary: '그룹 코드 검색' })
   @UseGuards(AuthGuard('jwt'))
   @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 200, type: GetCodeDto })
+  @ApiResponse({ status: 200, type: GetGroupsDto })
   @ApiBody({ type: GetCodeDto })
-  @Get('')
+  @Get('code')
   @HttpCode(HttpStatus.OK)
   async getCodeGroup(@Body() getCodeDto: GetCodeDto) {
-    const getGroup = await this.groupService.getCodeGroup(getCodeDto);
-
-    return {
-      data: getGroup,
-    };
+    return await this.groupService.getCodeGroup(getCodeDto);
   }
 
   /**
@@ -192,20 +163,12 @@ export class GroupController {
   @ApiOperation({ summary: '그룹 삭제' })
   @UseGuards(AuthGuard('jwt'))
   @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 200 })
-  @ApiParam({ name: 'groupId', type: Number, description: '그룹 ID' })
+  @ApiResponse({ status: 204 })
+  @ApiBody({ type: GetGroupDto })
   @Delete('delete')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteGroup(@Body() getGroupDto: GetGroupDto, @Req() req: JwtRequest) {
     const { userId } = req.user;
-    const deleteGroup = await this.groupService.deleteGroup(
-      getGroupDto.groupId,
-      userId,
-    );
-
-    return {
-      message: '그룹이 정상적으로 해체되었습니다.',
-      data: deleteGroup,
-    };
+    return await this.groupService.deleteGroup(getGroupDto.groupId, userId);
   }
 }

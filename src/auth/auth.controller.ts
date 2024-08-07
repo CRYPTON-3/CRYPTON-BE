@@ -23,7 +23,6 @@ import {
 import { userInfoDto } from './dto/response/userInfo';
 import { KakaoAuthGuard } from 'src/utils/guard/kakao.guard';
 import { Request, Response } from 'express';
-import { JwtRequest } from 'src/utils/data/jwt.data';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -76,65 +75,5 @@ export class AuthController {
 
     const accessToken = user.accessToken;
     return res.json({ accessToken });
-  }
-
-  /**
-   * 유저 이름 업데이트
-   * userFlow => 유저 이름 업데이트 요청 => 업데이트 성공
-   * serverFlow => 업데이트 업데이트 업데이트
-   * 3계층 순서로 업데이트 요청을 보냄
-   * Controller(updateName)
-   * Service(updateName)
-   * Repository(updateName)
-   * RequsetDto(UpDateNameDto)
-   * ResponseDto(userInfoDto)
-   */
-  @ApiOperation({
-    summary: '이름 업데이트',
-  })
-  @UseGuards(AuthGuard('jwt'))
-  @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 201, type: userInfoDto })
-  @Patch('update')
-  @ApiBody({ type: UpDateNameDto })
-  @HttpCode(HttpStatus.CREATED)
-  async updateName(
-    @Body() upDateNameDto: UpDateNameDto,
-    @Req() req: JwtRequest,
-  ) {
-    const { userId } = req.user;
-
-    const user = await this.authService.updateName(upDateNameDto, userId);
-    return {
-      message: '이름 변경에 성공하였습니다.',
-      data: user,
-    };
-  }
-
-  /**
-   * 유저 회원 탈퇴
-   * userFlow => 유저 회원 탈퇴 요청 => 탈퇴 성공
-   * serverFlow => 탈퇴 탈퇴 탈퇴
-   * 3계층 순서로 요청을 보냄
-   * Controller(deleteUser)
-   * Service(deleteUser)
-   * Repository(deleteUser)
-   */
-  @ApiOperation({
-    summary: '유저 회원 탈퇴',
-  })
-  @UseGuards(AuthGuard('jwt'))
-  @ApiCookieAuth('accessToken')
-  @ApiResponse({ status: 200 })
-  @Delete('delete')
-  @HttpCode(HttpStatus.OK)
-  async deleteUser(@Req() req: JwtRequest) {
-    const { userId } = req.user;
-
-    const user = await this.authService.deleteUser(userId);
-    return {
-      message: '회원 탈퇴가 성공적으로 요청됐습니다.',
-      data: user,
-    };
   }
 }

@@ -107,31 +107,4 @@ export class AuthService {
       );
     }
   }
-
-  /**
-   * 유저 이름 업데이트
-   */
-  async updateName(updateNameDto: UpDateNameDto, id: number) {
-    try {
-      const { name } = updateNameDto;
-      return await this.authRepository.updateName(name, id);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        '이름 업데이트 중 오류가 발생했습니다.',
-      );
-    }
-  }
-
-  /**
-   * 유저 삭제
-   */
-  async deleteUser(id: number) {
-    try {
-      return await this.authRepository.deleteUser(id);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        '유저 삭제 중 오류가 발생했습니다.',
-      );
-    }
-  }
 }
