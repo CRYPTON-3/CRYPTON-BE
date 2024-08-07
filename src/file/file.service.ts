@@ -31,4 +31,8 @@ export class FileService {
     }
     return;
   }
+
+  async getFiles(userId: number) {
+    return await this.fileRepository.getFiles(userId);
+  }
 }

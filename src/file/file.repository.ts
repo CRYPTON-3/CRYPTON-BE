@@ -28,4 +28,17 @@ export class FileRepository {
       },
     });
   }
+
+  async getFiles(userId: number) {
+    return await this.prismaService.file.findMany({
+      where: {
+        ownerId: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+      },
+    });
+  }
 }
