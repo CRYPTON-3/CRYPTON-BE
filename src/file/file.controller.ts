@@ -5,19 +5,16 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileService } from './file.service';
 
 @Controller('file')
 export class FileController {
+  constructor(private readonly fileService: FileService) {}
+
   @Post()
   @UseInterceptors(FilesInterceptor('files'))
-  upload(@UploadedFiles() files: Express.Multer.File[]) {
-    const utfFiles = files.map((file) => {
-      const filename = Buffer.from(file.originalname, 'latin1').toString(
-        'utf8',
-      );
-      return { ...file, originalname: filename };
-    });
-    console.log(utfFiles);
+  async upload(@UploadedFiles() files: Express.Multer.File[]) {
+    await this.fileService.upload(files, 1);
     return;
   }
 }
