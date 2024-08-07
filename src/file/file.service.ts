@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CryptonService } from 'src/crypto/crypton.service';
+import { CryptonService } from 'src/crypton/crypton.service';
 import { FileRepository } from './file.repository';
 import { AwsService } from 'src/aws/aws.service';
 import { v4 as uuidv4 } from 'uuid';
