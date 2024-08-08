@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { GroupUsersModule } from './group-users/group-users.module';
 import { UserModule } from './user/user.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     GroupModule,
     GroupUsersModule,
     UserModule,
+    FileModule,
   ],
   providers: [],
 })

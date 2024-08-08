@@ -22,6 +22,7 @@ model User {
   GroupUserInvitation GroupUserInvitation[]
   FileOpenHistory     FileOpenHistory[]
   FileStealHistory    FileStealHistory[]
+  File                File[]
 }
 
 model Group {
@@ -66,10 +67,14 @@ model GroupUserInvitation {
 }
 
 model File {
-  id               String             @id @default(uuid())
-  hash             String
-  key              String
-  createdAt        DateTime           @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  hash      String
+  key       String
+  ownerId   Int
+  createdAt DateTime @default(now())
+
+  User             User               @relation(fields: [ownerId], references: [id])
   FileOpenHistory  FileOpenHistory[]
   FileStealHistory FileStealHistory[]
   GroupFile        GroupFile[]
